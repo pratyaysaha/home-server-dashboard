@@ -15,10 +15,6 @@ import {
 
 import {
     LayoutDashboard,
-    BarChart3,
-    Boxes,
-    Power,
-    FileText,
     Settings,
     Server,
 } from "lucide-react"
@@ -27,11 +23,7 @@ import { formatUptime } from "@/lib/utils"
 
 const navItems = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
-    // { name: "Metrics", href: "/metrics", icon: BarChart3 },
-    // { name: "Services", href: "/services", icon: Boxes },
-    // { name: "Controls", href: "/controls", icon: Power },
-    // { name: "Logs", href: "/logs", icon: FileText },
-    // { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Settings", href: "/settings", icon: Settings },
 ]
 
 export function AppSidebar() {
