@@ -1,9 +1,17 @@
+import withPWA from "@ducanh2912/next-pwa";
+
 const nextConfig = {
   output: "export",
-  allowedDevOrigins: ["192.168.1.8", "localhost"],
+  turbopack: {},
+  allowedDevOrigins: [
+    "192.168.1.8",
+    "localhost",
+  ],
   images: {
     unoptimized: true,
   },
 };
 
-export default nextConfig;
+export default withPWA({
+  dest: "public",
+})(nextConfig);
