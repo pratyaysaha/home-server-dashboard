@@ -77,7 +77,7 @@ export function AppSidebar() {
             <SidebarFooter>
                 <div className="text-sm p-2">
                     <div className={`text-${isOnline ? 'green' : 'red'}-400 font-medium`}>● Server {isOnline ? 'Online' : 'Offline'}</div>
-                    {isOnline && uptime !== undefined && (
+                    {isOnline && uptime > 0 && (
                         <div className="text-muted-foreground">
                             Uptime: {formatUptime(uptime)}
                         </div>

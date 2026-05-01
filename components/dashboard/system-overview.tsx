@@ -2,15 +2,12 @@ import { useSystemStore } from "@/store/globalStore"
 import { MetricCard } from "./metric-card"
 import { Cpu, MemoryStick, Thermometer, HardDrive, Warehouse, SquareKanban, Frown } from "lucide-react"
 import { useDashboard } from "@/hooks/useDashboard";
-import { useEffect } from "react";
 import { Card } from "../ui/card";
 import { useMetricsHistory } from "@/hooks/useSystemMetrics";
-import { cp } from "fs";
 
 export function SystemOverview() {
 
     const isOnline = useSystemStore((state) => state.isOnline);
-    const setUptime = useSystemStore((state) => state.setUptime)
 
     const { data, error } = useDashboard();
     const { data: metricsData } = useMetricsHistory("1h");
@@ -24,11 +21,6 @@ export function SystemOverview() {
     const ssdTotal = data?.metrics?.ssd?.total_gb || 0;
     const zfsUsed = data?.metrics?.zfs?.used_gb || 0;
     const zfsTotal = data?.metrics?.zfs?.total_gb || 0;
-    const uptimeSec = data?.metrics?.uptime_sec || 0;
-
-    useEffect(() => {
-        setUptime(uptimeSec);
-    }, [uptimeSec, setUptime])
 
     const cpuMetric = metricsData?.cpu || [];
     const loadMetric = metricsData?.load || [];
