@@ -2,6 +2,15 @@ import { api } from "@/lib/api";
 
 const SUBSCRIPTION_ID_STORAGE_KEY = "notification-subscription-id";
 const INITIAL_TEST_DELAY_MS = 1200;
+const ALLOWED_DEVICE_TYPES = [
+    "prod",
+    "test",
+    "dev",
+    "development",
+    "staging",
+] as const;
+
+type DeviceType = (typeof ALLOWED_DEVICE_TYPES)[number];
 
 function urlBase64ToUint8Array(base64String: string) {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -11,6 +20,24 @@ function urlBase64ToUint8Array(base64String: string) {
     const rawData = window.atob(base64);
 
     return Uint8Array.from(rawData, (char) => char.charCodeAt(0));
+}
+
+function getDeviceType(): DeviceType {
+    const deviceType = process.env.NEXT_PUBLIC_ENV_TYPE;
+
+    if (!deviceType) {
+        throw new Error("NEXT_PUBLIC_ENV_TYPE is not configured");
+    }
+
+    if (
+        !ALLOWED_DEVICE_TYPES.includes(deviceType as DeviceType)
+    ) {
+        throw new Error(
+            `NEXT_PUBLIC_ENV_TYPE must be one of: ${ALLOWED_DEVICE_TYPES.join(", ")}`,
+        );
+    }
+
+    return deviceType as DeviceType;
 }
 
 export function isNotificationSupported() {
@@ -43,6 +70,7 @@ export async function requestNotificationPermission() {
 
 export async function subscribeToPush() {
     const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    const deviceType = getDeviceType();
     if (!vapidPublicKey) {
         throw new Error("NEXT_PUBLIC_VAPID_PUBLIC_KEY is not configured");
     }
@@ -57,10 +85,10 @@ export async function subscribeToPush() {
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
         }));
-    const response = await api.post(
-        "/notification/subscribe",
-        JSON.parse(JSON.stringify(subscription)),
-    );
+    const response = await api.post("/notification/subscribe", {
+        ...JSON.parse(JSON.stringify(subscription)),
+        deviceType,
+    });
 
     const subscriptionId = response.data?.subscriptionId;
     if (!subscriptionId) {
