@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar"
 
 import {
+    BarChart3,
     LayoutDashboard,
     Settings,
     Server,
@@ -23,6 +24,7 @@ import { formatUptime } from "@/lib/utils"
 
 const navItems = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
+    { name: "Metrics", href: "/metrics", icon: BarChart3 },
     { name: "Settings", href: "/settings", icon: Settings },
 ]
 
