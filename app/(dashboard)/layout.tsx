@@ -1,7 +1,8 @@
 'use client'
 
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
+import { DashboardStateSync } from "@/components/dashboard/dashboard-state-sync"
 import { TopBar } from "@/components/dashboard/topbar"
 
 export default function DashboardLayout({
@@ -11,6 +12,7 @@ export default function DashboardLayout({
 }) {
     return (
         <SidebarProvider defaultOpen={true}>
+            <DashboardStateSync />
             <AppSidebar />
 
             <SidebarInset>
