@@ -15,6 +15,7 @@ import {
 
 import {
     BarChart3,
+    BookOpenText,
     LayoutDashboard,
     Settings,
     Server,
@@ -25,6 +26,7 @@ import { formatUptime } from "@/lib/utils"
 const navItems = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
     { name: "Metrics", href: "/metrics", icon: BarChart3 },
+    { name: "Blog Studio", href: "/blog", icon: BookOpenText },
     { name: "Settings", href: "/settings", icon: Settings },
 ]
 
