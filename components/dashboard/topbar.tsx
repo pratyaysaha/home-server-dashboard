@@ -5,7 +5,7 @@ import { RefreshCcw } from "lucide-react"
 import { SidebarTrigger } from "../ui/sidebar"
 import { useServerStatus } from "@/hooks/userServerStatus"
 import { useSystemStore } from "@/store/globalStore"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useDashboard } from "@/hooks/useDashboard"
 import { useServices } from "@/hooks/useService"
 
@@ -66,10 +66,18 @@ export function TopBar() {
             showStatus: false,
             showRefresh: false,
         },
+        "/blog": {
+            title: "Blog Studio",
+            subtitle: "AI draft workflow for Hugo posts",
+            showStatus: false,
+            showRefresh: false,
+        },
     }
 
     // fallback if route not matched
-    const current = config[pathname as keyof typeof config] || config["/"]
+    const current =
+        config[pathname as keyof typeof config] ||
+        (pathname.startsWith("/blog") ? config["/blog"] : config["/"])
 
     return (
         <header className="border-b border-border px-4 md:px-6 py-4 space-y-3 md:space-y-0 md:flex md:items-center md:justify-between">
