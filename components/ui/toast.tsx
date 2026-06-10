@@ -68,7 +68,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         <ToastContext.Provider value={value}>
             {children}
 
-            <div className="pointer-events-none fixed top-4 right-4 z-50 flex w-full max-w-sm flex-col gap-3 px-4 sm:px-0">
+            <div className="pointer-events-none fixed top-4 right-4 z-9999 flex w-full max-w-sm flex-col gap-3 px-4 sm:px-0">
                 {toasts.map((toast) => {
                     const isError = toast.variant === "error";
 

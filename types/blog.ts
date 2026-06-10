@@ -91,3 +91,48 @@ export type PublishBlogProjectResponse = {
     postId: string;
     markdownPath: string;
 };
+
+export type BlogAsset = {
+    asset_id: string;
+    project_id: string;
+    asset_type: string;
+    file_name: string;
+    file_path: string;
+    description?: string;
+    created_at: string;
+}
+
+export type BlogAssetsResponse = {
+    assets: BlogAsset[];
+}
+
+
+export type UpdateAssetDescriptionRequest = {
+    assetId: string;
+    description: string;
+    projectId: string;
+}
+
+export type UpdateAssetDescriptionResponse = {
+    message: string;
+    assetId: string;
+    newDescription: string;
+    updateResult: boolean;
+}
+export type UploadProjectAssetsRequest = {
+    projectId: string;
+    files: File[];
+}
+
+export type UploadedAsset = {
+    assetId: string;
+    fileName: string;
+    path: string;
+    projectId: string;
+    assetType: string;
+}
+
+export type DeleteBlogAssetRequest = {
+    assetId: string;
+    projectId: string;
+}
