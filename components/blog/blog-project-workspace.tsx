@@ -32,6 +32,7 @@ import {
     useUnpublishBlogPost,
 } from "@/hooks/useBlog";
 import type { BlogDraft } from "@/types/blog";
+import BlogAssetSection from "./blog-asset-section";
 
 function getDraftLabel(draft: BlogDraft, index: number) {
     return `Draft ${index + 1}`;
@@ -393,6 +394,7 @@ export function BlogProjectWorkspace() {
                     </CardContent>
                 </Card>
             </div>
+            <BlogAssetSection projectId={projectId} isPublished={isPublished} />
 
             <PublishBlogDialog
                 project={project}

@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
 import type {
+    BlogAssetsResponse,
     BlogPostContentResponse,
     BlogPostResponse,
     BlogPostsResponse,
@@ -11,12 +12,17 @@ import type {
     BlogProjectsResponse,
     CreateBlogProjectInput,
     CreateBlogProjectResponse,
+    DeleteBlogAssetRequest,
     GenerateBlogDraftInput,
     GenerateBlogDraftResponse,
     PublishBlogProjectInput,
     PublishBlogProjectResponse,
     SelectBlogDraftInput,
+    UpdateAssetDescriptionRequest,
+    UpdateAssetDescriptionResponse,
     UpdateBlogDraftInput,
+    UploadedAsset,
+    UploadProjectAssetsRequest,
 } from "@/types/blog";
 
 export const blogKeys = {
@@ -25,6 +31,7 @@ export const blogKeys = {
     posts: ["blog", "posts"] as const,
     post: (postId: string) => ["blog", "post", postId] as const,
     postContent: (postId: string) => ["blog", "post", postId, "content"] as const,
+    assets : (projectId: string) => ["blog", "assets", projectId] as const
 };
 
 export function useBlogProjects() {
@@ -191,3 +198,107 @@ export function useUnpublishBlogPost() {
         },
     });
 }
+
+export function useBlogAssets(projectId: string) {
+    return useQuery<BlogAssetsResponse>({
+        queryKey: blogKeys.assets(projectId),
+        queryFn: async () => {
+            const res = await api.get(`/blog/project/${projectId}/assets`);
+            return res.data;
+        },
+        refetchOnWindowFocus: true,
+        staleTime: 3000,
+    });
+}
+
+export const updateAssetDescription = async ({
+    assetId,
+    description,
+}: UpdateAssetDescriptionRequest) => {
+    const response =
+        await api.put<UpdateAssetDescriptionResponse>(
+            `/blog/asset/${assetId}/description`,
+            {
+                description,
+            }
+        );
+    return response.data;
+};
+
+export const useUpdateAssetDescription = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: updateAssetDescription,
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: ["blog-assets"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: blogKeys.assets(variables.projectId)
+            });
+        },
+    });
+};
+
+
+export const uploadProjectAssets = async ({
+    projectId,
+    files,
+}: UploadProjectAssetsRequest): Promise<UploadedAsset[]> => {
+    const formData = new FormData();
+    files.forEach((file) => {
+        formData.append("files", file);
+    });
+    const response = await api.post<UploadedAsset[]>(
+        `/blog/project/${projectId}/assets`,
+        formData,
+        {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        }
+    );
+    return response.data;
+};
+
+export const useUploadProjectAssets = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: uploadProjectAssets,
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: blogKeys.assets(
+                    variables.projectId
+                ),
+            });
+        },
+    });
+};
+
+export const deleteBlogAsset = async (
+    assetId: string
+): Promise<{ message: string }> => {
+    const response = await api.delete(
+        `/blog/asset/${assetId}`
+    );
+
+    return response.data;
+};
+
+export const useDeleteBlogAsset = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async ({
+            assetId,
+        }: DeleteBlogAssetRequest) => {
+            return deleteBlogAsset(assetId);
+        },
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: blogKeys.assets(
+                    variables.projectId
+                ),
+            });
+        },
+    });
+};

@@ -15,6 +15,7 @@ import {
     Columns2,
     Eye,
     FileText,
+    ImageIcon,
     LoaderCircle,
     Lock,
     Save,
@@ -39,8 +40,11 @@ import {
 import { cn } from "@/lib/utils";
 import type { BlogDraft, BlogProject } from "@/types/blog";
 import { MermaidRenderer } from "./mermaid-renderer";
+import Image from "next/image";
+import { Separator } from "../ui/separator";
+import BlogAssetSection from "./blog-asset-section";
 
-type EditorMode = "edit" | "preview" | "split";
+type EditorMode = "edit" | "preview" | "split" | "assets";
 
 function getDraftMarkdown(draft: BlogDraft) {
     return draft.markdown ?? draft.content ?? "";
@@ -262,32 +266,36 @@ function DraftEditorContent({
                     { value: "edit", label: "Edit", icon: SquarePen },
                     { value: "preview", label: "Preview", icon: Eye },
                     { value: "split", label: "Split", icon: Columns2 },
+                    { value: "assets", label: "Assets", icon: ImageIcon, separator: true }
                 ].map((item) => {
                     const Icon = item.icon;
                     const isActive = mode === item.value;
 
                     return (
-                        <Button
-                            key={item.value}
-                            variant={isActive ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setMode(item.value as EditorMode)}
-                        >
-                            <Icon />
-                            {item.label}
-                        </Button>
+                        <>
+                            {item.separator && <Separator orientation="vertical" />}
+                            <Button
+                                key={item.value}
+                                variant={isActive ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setMode(item.value as EditorMode)}
+                            >
+                                <Icon />
+                                {item.label}
+                            </Button>
+                        </>
                     );
                 })}
             </div>
 
-            <div
+            {mode !== "assets" ? <div
                 className={cn(
                     "grid gap-5",
                     mode === "split" ? "xl:grid-cols-2" : "grid-cols-1",
                 )}
             >
                 {mode !== "preview" ? (
-                    <Card className="min-h-[620px] border-border/70 shadow-sm">
+                    <Card className="min-h-155 border-border/70 shadow-sm">
                         <CardHeader>
                             <CardTitle>Markdown Editor</CardTitle>
                         </CardHeader>
@@ -317,7 +325,7 @@ function DraftEditorContent({
                 ) : null}
 
                 {mode !== "edit" ? (
-                    <Card className="min-h-[620px] border-border/70 shadow-sm">
+                    <Card className="min-h-155 border-border/70 shadow-sm">
                         <CardHeader>
                             <CardTitle>Live Preview</CardTitle>
                         </CardHeader>
@@ -333,11 +341,41 @@ function DraftEditorContent({
                                 </div>
                             ) : null}
 
-                            <div className="markdown-preview min-h-[420px] rounded-lg border border-border/70 bg-background p-4">
+                            <div className="markdown-preview min-h-105 rounded-lg border border-border/70 bg-background p-4">
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm]}
                                     components={{
+                                        img: ({ src, alt }) => {
+                                            console.log("IMAGE", src);
+                                            if (typeof src === "string" && src.startsWith("asset-")) {
+                                                const assetId =
+                                                    src.replace("asset-", "");
+                                                return (
+                                                    <span className="flex justify-center">
+                                                        <Image
+                                                            src={`${process.env.NEXT_PUBLIC_API_URL}/blog/asset/${assetId}`}
+                                                            alt={alt ?? `img-${assetId}`}
+                                                            width={800}
+                                                            height={450}
+                                                            priority
+                                                            className="rounded-lg border"
+                                                        />
+                                                    </span>
+                                                );
+                                            }
+                                            return (
+                                                <Image
+                                                    src={typeof src === "string" ? src : "/asset"}
+                                                    alt={alt ?? `img-random}`}
+                                                    width={800}
+                                                    height={450}
+                                                    priority
+                                                    className="max-w-full rounded-lg border"
+                                                />
+                                            );
+                                        },
                                         code({ className, children, ...props }) {
+                                            console.log("Classname :: ", className)
                                             const isCodeBlock = !!className;
                                             if (!isCodeBlock) {
                                                 return (
@@ -372,14 +410,20 @@ function DraftEditorContent({
                             </div>
                         </CardContent>
                     </Card>
-                ) : null}
-            </div>
+                ) : null
+                }
+            </div > :
+                <BlogAssetSection
+                    projectId={projectId}
+                    isPublished={isPublished}
+                />
+            }
 
             <PublishBlogDialog
                 project={project}
                 open={showPublishDialog}
                 onOpenChange={setShowPublishDialog}
             />
-        </section>
+        </section >
     );
 }
