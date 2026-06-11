@@ -136,3 +136,46 @@ export type DeleteBlogAssetRequest = {
     assetId: string;
     projectId: string;
 }
+
+export type SocialPost = {
+    social_post_id: string;
+    project_id: string;
+    platform: string;
+    generation_prompt: string;
+    post_content: string;
+    model_name: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export type GetProjectSocialPostsResponse = {
+    socialPosts: SocialPost[];
+}
+
+export type GenerateSocialPostRequest =  {
+    projectId: string;
+    platform: string;
+    prompt: string;
+}
+
+export type GenerateSocialPostResponse = {
+    socialMediaPostId: string;
+    aiResponse: {
+        success: boolean;
+        content: string;
+        metadata: {
+            model: string;
+            finishReason: string;
+            usage: {
+                promptTokens: number;
+                completionTokens: number;
+                totalTokens: number;
+            };
+        };
+    };
+    success: boolean;
+}
+
+export type DeleteSocialPostRequest = {
+    socialPostId: string;
+}
