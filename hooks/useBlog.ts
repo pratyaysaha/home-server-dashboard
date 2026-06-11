@@ -13,8 +13,12 @@ import type {
     CreateBlogProjectInput,
     CreateBlogProjectResponse,
     DeleteBlogAssetRequest,
+    DeleteSocialPostRequest,
     GenerateBlogDraftInput,
     GenerateBlogDraftResponse,
+    GenerateSocialPostRequest,
+    GenerateSocialPostResponse,
+    GetProjectSocialPostsResponse,
     PublishBlogProjectInput,
     PublishBlogProjectResponse,
     SelectBlogDraftInput,
@@ -31,7 +35,8 @@ export const blogKeys = {
     posts: ["blog", "posts"] as const,
     post: (postId: string) => ["blog", "post", postId] as const,
     postContent: (postId: string) => ["blog", "post", postId, "content"] as const,
-    assets : (projectId: string) => ["blog", "assets", projectId] as const
+    assets : (projectId: string) => ["blog", "assets", projectId] as const,
+    socialPosts: (projectId: string) => ["blog", "social-posts", projectId] as const,
 };
 
 export function useBlogProjects() {
@@ -296,6 +301,100 @@ export const useDeleteBlogAsset = () => {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: blogKeys.assets(
+                    variables.projectId
+                ),
+            });
+        },
+    });
+};
+
+
+export const getProjectSocialPosts = async (
+    projectId: string
+): Promise<GetProjectSocialPostsResponse> => {
+    const response =
+        await api.get<GetProjectSocialPostsResponse>(
+            `/blog/project/${projectId}/social/post`
+        );
+
+    return response.data;
+};
+
+export const useProjectSocialPosts = (
+    projectId: string
+) => {
+    return useQuery({
+        queryKey: blogKeys.socialPosts(projectId),
+
+        queryFn: () =>
+            getProjectSocialPosts(projectId),
+
+        enabled: !!projectId,
+    });
+};
+
+export const generateSocialPost = async ({
+    projectId,
+    platform,
+    prompt,
+}: GenerateSocialPostRequest): Promise<GenerateSocialPostResponse> => {
+    const response =
+        await api.post<GenerateSocialPostResponse>(
+            `/blog/project/${projectId}/social/post`,
+            {
+                platform,
+                prompt,
+            }, {
+                timeout: 60000,
+            }
+        );
+
+    return response.data;
+};
+
+export const useGenerateSocialPost = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: generateSocialPost,
+
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: blogKeys.socialPosts(
+                    variables.projectId
+                ),
+            });
+        },
+    });
+};
+
+export const deleteSocialPost = async ({
+    socialPostId,
+}: DeleteSocialPostRequest) => {
+    const response = await api.delete(
+        `/blog/social/post/${socialPostId}`
+    );
+
+    return response.data;
+};
+
+export const useDeleteSocialPost = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({
+            socialPostId,
+        }: {
+            socialPostId: string;
+            projectId: string;
+        }) =>
+            deleteSocialPost({
+                socialPostId,
+            }),
+
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: blogKeys.socialPosts(
                     variables.projectId
                 ),
             });

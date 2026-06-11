@@ -9,7 +9,7 @@ import {
     CardDescription
 } from "@/components/ui/card";
 import { Button } from "../ui/button";
-import { Upload, TriangleAlert, EllipsisVertical, Copy, Trash2 } from "lucide-react";
+import { Upload, TriangleAlert, EllipsisVertical, Copy, Trash2, Images } from "lucide-react";
 import { useBlogAssets } from "@/hooks/useBlog";
 import Image from "next/image";
 import { useState } from "react";
@@ -18,6 +18,7 @@ import AssetUploadDialog from "./asset-upload-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { useToast } from "../ui/toast";
 import DeleteAssetDialog from "./asset-delete-dialog";
+import EmptyState from "../common/empty-state";
 
 
 const BlogAssetSection = ({
@@ -71,7 +72,11 @@ const BlogAssetSection = ({
                     <CardContent className="space-y-3">
                         {
                             blogAssetsData?.assets.length === 0 ?
-                                (<span className="text-sm text-muted-foreground">No asset included for this project</span>) :
+                                (<EmptyState
+                                    title="Build your project asset library"
+                                    description="Store and manage visual assets for your blog posts. Uploaded assets can be reused across multiple drafts"
+                                    icon={Images}
+                                />) :
                                 (
                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
                                         {blogAssetsData?.assets.map((asset) => {
