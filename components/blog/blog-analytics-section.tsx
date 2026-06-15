@@ -7,7 +7,7 @@ import EmptyState from "../common/empty-state";
 import AnalyticsSummaryCards from "./analytics-summary-card";
 import AnalyticsTrafficChart from "./analytics-traffic-chart";
 import { useState } from "react";
-import { AnalyticsDateRange, AnalyticsUnit } from "@/types/analytics";
+import { AnalyticsDateRange } from "@/types/analytics";
 import { getRangeDates } from "@/helper/analytics-helper";
 
 interface BlogAnalyticsSectionProps {
@@ -20,7 +20,6 @@ const BlogAnalyticsSection = ({
     isPublished,
 }: BlogAnalyticsSectionProps) => {
 
-    const [unit, setUnit] = useState<AnalyticsUnit>("day");
     const [range, setRange] = useState<AnalyticsDateRange>("alltime");
     const { startAt, endAt } = getRangeDates(range);
 
@@ -47,8 +46,6 @@ const BlogAnalyticsSection = ({
                 projectId={projectId}
                 range={range}
                 onRangeChange={setRange}
-                unit={unit}
-                onUnitChange={setUnit}
                 startAt={startAt}
                 endAt={endAt}
             />
