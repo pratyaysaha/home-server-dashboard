@@ -21,6 +21,7 @@ import BlogAssetSection from "./blog-asset-section";
 import BlogSocialMediaPostSection from "./blog-social-post-section";
 import BlogDraftSection from "./blog-draft-section";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import BlogAnalyticsSection from "./blog-analytics-section";
 
 export function BlogProjectWorkspace() {
     const searchParams = useSearchParams();
@@ -91,6 +92,7 @@ export function BlogProjectWorkspace() {
                     <TabsTrigger value="draft" className="px-5 text-sm">Drafts</TabsTrigger>
                     <TabsTrigger value="asset" className="px-5 text-sm">Assets</TabsTrigger>
                     <TabsTrigger value="social-media-posts" className="px-5 text-sm">Socials</TabsTrigger>
+                    <TabsTrigger value="analytics" className="px-5 text-sm">Analytics</TabsTrigger>
                 </TabsList>
                 <TabsContent value="draft" className="space-y-5" >
                     <BlogDraftSection project={project} isPublished={isPublished} />
@@ -100,6 +102,9 @@ export function BlogProjectWorkspace() {
                 </TabsContent>
                 <TabsContent value="social-media-posts" className="space-y-5">
                     <BlogSocialMediaPostSection projectId={projectId} isPublished={isPublished} />
+                </TabsContent>
+                <TabsContent value="analytics" className="space-y-5">
+                    <BlogAnalyticsSection projectId={projectId} isPublished={isPublished} />
                 </TabsContent>
             </Tabs>
             <PublishBlogDialog
